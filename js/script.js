@@ -3,112 +3,100 @@
  */
 var GET = { output: 'html' };
 parseURLVars();
-//Immediately start running the code
-start();
+//Immediately pass on the GET variable to the proxy
+fetch('get.php?id=' + GET.id)
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(json) {
+    start(json);
+  });
 /**
- * Entry point of the code
+ * Entry point of the code, takes JSON data as the parameter, will then visualize it nicely
  */
-async function start() {
-    //Start the search process;
-    let searchData = await getSearchData();
-    let results = searchData.results;
-    if (GET.output.toLowerCase() === 'json') {
-        //Now set the html of the body to the JSON that was fetched
-        document.getElementsByTagName("body")[0].innerHTML = "<pre>" + JSON.stringify(searchData) + "</pre>";
-    } else {
-        //The html we will generate
-        var html = "";
-        results.forEach(function (result) {
-            html += htmlResult(result);
-        });
-        //Set the generated html as content of the list div
-        document.getElementsByTagName("body")[0].innerHTML = html;
-    }
-}
-
-/**
- * Generates the HTML for a result
- * @param {Object} result 
- */
-function htmlResult(result) {
-    //Generate the lemma header and open the div
-    var html = "<div class='result'><h3>" + result.lemma + "</h3>";
-    result.entries.forEach(function(entry){
-        html += htmlEntry(entry);
+function start(data){
+    //For each of the entry points in the data set, show a results div
+    let html = "";
+    data.forEach(entry =>{
+        //Start results div
+        html += "<div class='result'>";
+        html += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
+        html += "<span class='dictDef'>" + entry.Source + "</span>";
+        html += "<p>Chinese Name: " + entry.ChName + "</p>";
+        html += "<p>Korean Name: " + entry.KoName + "</p>";
+        html += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
+        html += "<p>Lived:  " + getLiveSpan(entry) +"</p>";
+        html += getAliases(entry);
+        html += getAddress(entry);
+        html += getEntries(entry);
+        //Close results div
+        html += "</div>";
     });
-    //Close the html div and return
-    return html + "</div>";
-
+    document.body.innerHTML = html;
 }
 
 /**
- * Generates the HTML code for one single entry
+ * Nicely formatg the collection object
  * @param {Object} entry 
  */
-function htmlEntry(entry){
-    var html = "<div class='entry' id='" + entry.id + "'>";
-    html += "<span class='dictDef'>Dict: " + entry.dictionary + "</span>";
-    html += "<ul class='meaningList'>";
-    entry.definitions.forEach(function(definition){
-        html += "<li><span class='langDef'>" + definition.language + "</span>:&nbsp;";
-        html += definition.definition;
-        html += "</li>";
+function getEntries(entry){
+    //If there is nothing in the array, return empty string
+    if(entry.aks_Entry.length < 1) return "";
+    //Else go through each one and add them to a list
+    let list = "Entries: <ol>";
+    entry.aks_Entry.forEach(alias =>{
+        list += "<li>";
+        list += alias.RuShiDoor + " (" + alias.RuShiType + ") - " + alias.RuShiYear;
+        list += "</li>";
     });
-    html += "</ul></div>";
-    //Now add the highlights to the generated text
-    let toReplace = entry.highlight.replace(/<\/?em>/g, '');
-    let index = html.indexOf(toReplace);
-    //Now reconstruct the string with the em in the middle
-    html = html.substring(0, index) + entry.highlight + html.substring(index + toReplace.length);
-
-    return html;
-}
-
-
-/**
- * Retrieves the access token from the api, and returns that token
- */
-async function getAccessToken() {
-    let response = await fetch('https://manc.hu/api/oauth/token', {
-        method: 'post',
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: "client_id=6nqtHYGpTc&client_secret=uv179ZWxI5rfIw6ilYGfA87TeAAAls5I&grant=client_credentials&scope=lexicon"
-    })
-    //Store the key after request
-    let key = await response.json();
-    //Now do the request with the access token
-    return key.access_token;
+    list += "</ol>";
+    return list;
 }
 
 /**
- * Starts the search process, first asks for an access token,
- * then checks if the keyword value is not empty or otherwise invalid
+ * Returns the livespan as a nice string
+ * @param {Object} entry 
  */
-async function getSearchData() {
-    //First check if the keyword is valid
-    var keyword = GET.keyword;
-    //Abort if keyword is undefined or not of a proper length
-    if (!keyword || keyword.length < 1) return;
-    //Now set up the request method
-    let response = await fetch('https://manc.hu/api/lexicon/search', {
-        method: 'post',
-        mode: "cors",
-        cache: "no-cache",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        headers: {
-            "Authorization": "Bearer " + (await getAccessToken()),
-            "Content-Type": "application/json",
-        },
-        body: '{"query": "' + keyword + '","definition": true,"from": 0,"size": 100}'
+function getLiveSpan(entry){
+    let start = entry.YearBirth == null ? "?" : entry.YearBirth;
+    let end = entry.YearDeath == null ? "?" : entry.YearDeath;
+    return start + " - " + end;
+}
+
+/**
+ * Adds nicely formatted aliases
+ * @param {Object} entry 
+ */
+function getAliases(entry){
+    //If there is nothing in the array, return empty string
+    if(entry.aks_PersonAliases.length < 1) return "";
+    //Else go through each one and add them to a list
+    let list = "Aliases: <ol>";
+    entry.aks_PersonAliases.forEach(alias =>{
+        list += "<li>";
+        list += alias.AliasName + " (" + alias.AliasType + ")";
+        list += "</li>";
     });
-    //Now wait for the response
-    let result = await response.json();
-    return result;
+    list += "</ol>";
+    return list;
+}
+
+/**
+ * Adds nicely formatted adress
+ * @param {Object} entry 
+ */
+function getAddress(entry){
+    //If there is nothing in the array, return empty string
+    if(entry.aks_Address.length < 1) return "";
+    //Else go through each one and add them to a list
+    let list = "Address: <ol>";
+    entry.aks_Address.forEach(alias =>{
+        list += "<li>";
+        list += alias.AddrName + " (" + alias.AddrType + ")";
+        list += "</li>";
+    });
+    list += "</ol>";
+    return list;
 }
 
 /**
