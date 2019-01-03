@@ -4,7 +4,7 @@
 var GET = { output: 'html' };
 parseURLVars();
 //Immediately pass on the GET variable to the proxy
-fetch('get.php?id=' + GET.id)
+fetch('https://www.interwing.nl/digerait/get.php?id=' + GET.id)
   .then(function(response) {
     return response.json();
   })
