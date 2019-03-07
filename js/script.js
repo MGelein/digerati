@@ -5,18 +5,34 @@ var GET = { output: 'html' };
 parseURLVars();
 //Check if we are passing by query or id
 console.log("Starting query...");
-if (GET.q != undefined) {
-    console.log("Using query");
-    lookup('get_names.php?q=' + GET.q);
-} else if (GET.id != undefined) {
-    console.log("Using ID");
-    lookup('get_names.php?id=' + GET.id);
+if (GET.m == undefined) {
+    //Do nothing on unselected method, maybe display warning?
+} else {
+    //Normalize mode
+    normalizeMode();
+    //Only do something if we really have a method selected
+    if (GET.q != undefined) {
+        console.log("Using query");
+        lookup('get.php?m=' + GET.m + '&q=' + GET.q);
+    } else if (GET.id != undefined) {
+        console.log("Using ID");
+        lookup('get.php?m=' + GET.m + '&id=' + GET.id);
+    }
+}
+
+/**
+ * Make the API work with different aliases for the modes
+ */
+function normalizeMode(){
+    //First make it all lowercase, and only pick the first letter
+    GET.m = GET.m.toLowerCase().trim().substring(0, 1);
 }
 
 function lookup(url) {
     //Immediately pass on the GET variable to the proxy
     fetch(url)
         .then(function (response) {
+            //Log the JSON response the console for debugging
             console.log(response);
             return response.json();
         })
@@ -32,21 +48,60 @@ function start(data) {
     //For each of the entry points in the data set, show a results div
     let html = "";
     data.forEach(entry => {
-        //Start results div
-        html += "<div class='result'>";
-        html += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
-        html += "<span class='dictDef'>" + entry.Source + "</span>";
-        html += "<p>Chinese Name: " + entry.ChName + "</p>";
-        html += "<p>Korean Name: " + entry.KoName + "</p>";
-        html += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
-        html += "<p>Lived:  " + getLiveSpan(entry) + "</p>";
-        html += getAliases(entry);
-        html += getAddress(entry);
-        html += getEntries(entry);
-        //Close results div
-        html += "</div>";
+        console.log(entry);
+        switch (GET.m) {
+            case 'n':
+                html += displayName(entry);
+                break;
+            case 'p':
+                html += displayPlace(entry);
+                break;
+            case 't':
+                html += displayTitle(entry);
+                break;
+            case 'b':
+                html += displayBook(entry);
+                break;
+        }
     });
     document.body.innerHTML = html;
+}
+
+/**
+ * Pretty prints the object entry to the screen
+ * @param {Object} entry 
+ */
+function displayName(entry) {
+    //Start results div
+    html += "<div class='result'>";
+    html += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
+    html += "<p>Lived:  " + getLiveSpan(entry) + "</p>";
+    html += getAliases(entry);
+    html += getAddress(entry);
+    html += getEntries(entry);
+    //Close results div
+    html += "</div>";
+}
+
+/**
+ * Pretty prints the object entry to the screen
+ * @param {Object} entry 
+ */
+function displayPlace(entry) {
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + entry.LocationId + " <span style='color:grey;'>(" + entry.AksloId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To Map</a></p>";
+    //Close results div
+    html += "</div>";
+    return html;
 }
 
 /**
