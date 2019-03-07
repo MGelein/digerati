@@ -3,22 +3,35 @@
  */
 var GET = { output: 'html' };
 parseURLVars();
-//Immediately pass on the GET variable to the proxy
-fetch('get.php?id=' + GET.id)
-  .then(function(response) {
-      console.log(response);
-    return response.json();
-  })
-  .then(function(json) {
-    start(json);
-  });
+//Check if we are passing by query or id
+console.log("Starting query...");
+if (GET.q != undefined) {
+    console.log("Using query");
+    lookup('get_names.php?q=' + GET.q);
+} else if (GET.id != undefined) {
+    console.log("Using ID");
+    lookup('get_names.php?id=' + GET.id);
+}
+
+function lookup(url) {
+    //Immediately pass on the GET variable to the proxy
+    fetch(url)
+        .then(function (response) {
+            console.log(response);
+            return response.json();
+        })
+        .then(function (json) {
+            start(json);
+        });
+}
+
 /**
  * Entry point of the code, takes JSON data as the parameter, will then visualize it nicely
  */
-function start(data){
+function start(data) {
     //For each of the entry points in the data set, show a results div
     let html = "";
-    data.forEach(entry =>{
+    data.forEach(entry => {
         //Start results div
         html += "<div class='result'>";
         html += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
@@ -26,7 +39,7 @@ function start(data){
         html += "<p>Chinese Name: " + entry.ChName + "</p>";
         html += "<p>Korean Name: " + entry.KoName + "</p>";
         html += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
-        html += "<p>Lived:  " + getLiveSpan(entry) +"</p>";
+        html += "<p>Lived:  " + getLiveSpan(entry) + "</p>";
         html += getAliases(entry);
         html += getAddress(entry);
         html += getEntries(entry);
@@ -40,12 +53,12 @@ function start(data){
  * Nicely formatg the collection object
  * @param {Object} entry 
  */
-function getEntries(entry){
+function getEntries(entry) {
     //If there is nothing in the array, return empty string
-    if(entry.aks_Entry.length < 1) return "";
+    if (entry.aks_Entry.length < 1) return "";
     //Else go through each one and add them to a list
     let list = "Entries: <ol>";
-    entry.aks_Entry.forEach(alias =>{
+    entry.aks_Entry.forEach(alias => {
         list += "<li>";
         list += alias.RuShiDoor + " (" + alias.RuShiType + ") - " + alias.RuShiYear;
         list += "</li>";
@@ -58,7 +71,7 @@ function getEntries(entry){
  * Returns the livespan as a nice string
  * @param {Object} entry 
  */
-function getLiveSpan(entry){
+function getLiveSpan(entry) {
     let start = entry.YearBirth == null ? "?" : entry.YearBirth;
     let end = entry.YearDeath == null ? "?" : entry.YearDeath;
     return start + " - " + end;
@@ -68,12 +81,12 @@ function getLiveSpan(entry){
  * Adds nicely formatted aliases
  * @param {Object} entry 
  */
-function getAliases(entry){
+function getAliases(entry) {
     //If there is nothing in the array, return empty string
-    if(entry.aks_PersonAliases.length < 1) return "";
+    if (entry.aks_PersonAliases.length < 1) return "";
     //Else go through each one and add them to a list
     let list = "Aliases: <ol>";
-    entry.aks_PersonAliases.forEach(alias =>{
+    entry.aks_PersonAliases.forEach(alias => {
         list += "<li>";
         list += alias.AliasName + " (" + alias.AliasType + ")";
         list += "</li>";
@@ -86,12 +99,12 @@ function getAliases(entry){
  * Adds nicely formatted adress
  * @param {Object} entry 
  */
-function getAddress(entry){
+function getAddress(entry) {
     //If there is nothing in the array, return empty string
-    if(entry.aks_Address.length < 1) return "";
+    if (entry.aks_Address.length < 1) return "";
     //Else go through each one and add them to a list
     let list = "Address: <ol>";
-    entry.aks_Address.forEach(alias =>{
+    entry.aks_Address.forEach(alias => {
         list += "<li>";
         list += alias.AddrName + " (" + alias.AddrType + ")";
         list += "</li>";
