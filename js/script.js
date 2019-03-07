@@ -23,7 +23,7 @@ if (GET.m == undefined) {
 /**
  * Make the API work with different aliases for the modes
  */
-function normalizeMode(){
+function normalizeMode() {
     //First make it all lowercase, and only pick the first letter
     GET.m = GET.m.toLowerCase().trim().substring(0, 1);
 }
@@ -125,8 +125,44 @@ function displayBook(entry) {
  * Pretty prints the object entry to the screen
  * @param {Object} entry 
  */
-function displayTitle(entry){
+function displayTitle(entry) {
+    let sillok = entry.aks_bOfficesofSillok[0];
+    console.log(sillok);
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + sillok.sillokId + " <span style='color:grey;'>(" + entry.AksBOId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p>Date: " + getSillokDate(sillok) + "&nbsp;<span style='color:grey;'>(" + getKingDate(sillok) + ")</span></p>";
+    html += "<p><a target='_blank' href='" + sillok.sillokLink + "'>Sillok Link</a></p>";
+    //Close results div
+    html += "</div>";
+    return html;
+}
 
+/**
+ * Returns a nicely formatted date from a sillok office object
+ * @param {Object} s 
+ */
+function getSillokDate(s){
+    return pad(s.sillokDay) + "-" + pad(s.sillokMonth) + "-" + s.sillokYear;
+}
+
+/**
+ * Nicely formats the year of which king date
+ * @param {Object} s 
+ */
+function getKingDate(s){
+    return "year " + s.sillokKingYear + " of " + s.sillokKing;
+}
+
+/**
+ * If the number is smaller than 10 adds a leading 0
+ */
+function pad(s){
+    if(s < 10) return "0" + s;
+    else return s;
 }
 
 /**
