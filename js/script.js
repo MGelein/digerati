@@ -11,13 +11,14 @@ if (GET.m == undefined) {
     //Normalize mode
     normalizeMode();
     //Only do something if we really have a method selected
-    if (GET.q != undefined) {
-        console.log("Using query");
-        lookup('get.php?m=' + GET.m + '&q=' + GET.q);
-    } else if (GET.id != undefined) {
-        console.log("Using ID");
-        lookup('get.php?m=' + GET.m + '&id=' + GET.id);
-    }
+    // if (GET.q != undefined) {
+    //     console.log("Using query");
+    //     lookup('get.php?m=' + GET.m + '&q=' + GET.q);
+    // } else if (GET.id != undefined) {
+    //     console.log("Using ID");
+    //     lookup('get.php?m=' + GET.m + '&id=' + GET.id);
+    // }
+    lookup(constructUrl());
 }
 
 /**
@@ -28,9 +29,38 @@ function normalizeMode() {
     GET.m = GET.m.toLowerCase().trim().substring(0, 1);
 }
 
+/**
+ * Constructs the url we need to look up the data
+ */
+function constructUrl() {
+    //The base url, used for all services
+    let url = "https://digerati.aks.ac.kr:";
+    //Add the port number
+    url += getPortNumber(GET.m);
+    //Now see if we made a search or a ID request, and modify url accordingly
+    if (GET.q != undefined) {
+        url += "ChName?ChName=" + GET.q;
+    } else if (GET.id != undefined) {
+        url += "IdValues/" + GET.id;
+    }
+    return url;
+}
+
+/**
+ * REturns the appropriate port number for the mode of the search
+ * @param {String} mode 
+ */
+function getPortNumber(mode) {
+    if (mode == 'n') return "85/api/";
+    else if (mode == 'b') return "86/api/";
+    else if (mode == 'p') return "88/api/";
+    else if (mode == 't') return "89/api/";
+}
+
 function lookup(url) {
+    console.log("Loading data from: " + url);
     //Immediately pass on the GET variable to the proxy
-    fetch(url)
+    fetch(url, { mode: "no-cors" })
         .then(function (response) {
             //Log the JSON response the console for debugging
             console.log(response);
@@ -143,7 +173,7 @@ function displayTitle(entry) {
  * Returns a nicely formatted date from a sillok office object
  * @param {Object} s 
  */
-function getSillokDate(s){
+function getSillokDate(s) {
     return pad(s.sillokDay) + "-" + pad(s.sillokMonth) + "-" + s.sillokYear;
 }
 
@@ -151,15 +181,15 @@ function getSillokDate(s){
  * Nicely formats the year of which king date
  * @param {Object} s 
  */
-function getKingDate(s){
+function getKingDate(s) {
     return "year " + s.sillokKingYear + " of " + s.sillokKing;
 }
 
 /**
  * If the number is smaller than 10 adds a leading 0
  */
-function pad(s){
-    if(s < 10) return "0" + s;
+function pad(s) {
+    if (s < 10) return "0" + s;
     else return s;
 }
 
