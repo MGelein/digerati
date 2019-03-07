@@ -105,6 +105,31 @@ function displayPlace(entry) {
 }
 
 /**
+ * Pretty prints the object entry to the screen
+ * @param {Object} entry 
+ */
+function displayBook(entry) {
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + entry.BookId + " <span style='color:grey;'>(" + entry.AksbId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To More Info</a></p>";
+    //Close results div
+    html += "</div>";
+    return html;
+}
+
+/**
+ * Pretty prints the object entry to the screen
+ * @param {Object} entry 
+ */
+function displayTitle(entry){
+
+}
+
+/**
  * Nicely formatg the collection object
  * @param {Object} entry 
  */
