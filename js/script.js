@@ -48,7 +48,6 @@ function start(data) {
     //For each of the entry points in the data set, show a results div
     let html = "";
     data.forEach(entry => {
-        console.log(entry);
         switch (GET.m) {
             case 'n':
                 html += displayName(entry);
@@ -127,7 +126,6 @@ function displayBook(entry) {
  */
 function displayTitle(entry) {
     let sillok = entry.aks_bOfficesofSillok[0];
-    console.log(sillok);
     //Start results div
     let html = "<div class='result'>";
     html += "<h3>" + sillok.sillokId + " <span style='color:grey;'>(" + entry.AksBOId + ")</span></h3>"
