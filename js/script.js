@@ -10,14 +10,7 @@ if (GET.m == undefined) {
 } else {
     //Normalize mode
     normalizeMode();
-    //Only do something if we really have a method selected
-    // if (GET.q != undefined) {
-    //     console.log("Using query");
-    //     lookup('get.php?m=' + GET.m + '&q=' + GET.q);
-    // } else if (GET.id != undefined) {
-    //     console.log("Using ID");
-    //     lookup('get.php?m=' + GET.m + '&id=' + GET.id);
-    // }
+    //Lookup the constructed url
     lookup(constructUrl());
 }
 
@@ -52,23 +45,28 @@ function constructUrl() {
  */
 function getPortNumber(mode) {
     if (mode == 'n') return "85/api/";
-    else if (mode == 'b') return "86/api/";
+    else if (mode == 'b') return "91/api/";
     else if (mode == 'p') return "88/api/";
     else if (mode == 't') return "89/api/";
 }
 
-function lookup(url) {
-    console.log("Loading data from: " + url);
+function lookup(urlVar) {
+    console.log("Loading data from: " + urlVar);
     //Immediately pass on the GET variable to the proxy
-    fetch(url, { mode: "no-cors" })
-        .then(function (response) {
-            //Log the JSON response the console for debugging
-            console.log(response);
-            return response.json();
-        })
-        .then(function (json) {
-            start(json);
-        });
+    $.ajax({
+        url: urlVar,
+        type: "GET",
+        cache: false,
+        dataType: 'json',
+        crossDomain: true,            
+        contentType: "text/plain" ,        
+        success: function (response) {
+            start(response);
+        },
+        error: function (xhr, status) {
+            console.log("error in data request");
+        }
+    });
 }
 
 /**
