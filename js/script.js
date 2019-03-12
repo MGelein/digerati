@@ -124,18 +124,18 @@ function start(data) {
  */
 function displayName(entry) {
     //Start results div
-    html += "<div class='result'>";
-    html += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
-    html += "<span class='dictDef'>" + entry.Source + "</span>";
-    html += "<p>Chinese Name: " + entry.ChName + "</p>";
-    html += "<p>Korean Name: " + entry.KoName + "</p>";
-    html += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
-    html += "<p>Lived:  " + getLiveSpan(entry) + "</p>";
-    html += getAliases(entry);
-    html += getAddress(entry);
-    html += getEntries(entry);
+    let ahtml = "<div class='result'>";
+    ahtml += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
+    ahtml += "<span class='dictDef'>" + entry.Source + "</span>";
+    ahtml += "<p>Chinese Name: " + entry.ChName + "</p>";
+    ahtml += "<p>Korean Name: " + entry.KoName + "</p>";
+    ahtml += "<p>Gender: " + (entry.Gender == 1 ? "Male" : "Female") + "</p>";
+    ahtml += "<p>Lived:  " + getLiveSpan(entry) + "</p>";
+    ahtml += getAliases(entry);
+    ahtml += getAddress(entry);
+    ahtml += getEntries(entry);
     //Close results div
-    html += "</div>";
+    ahtml += "</div>";
 }
 
 /**
