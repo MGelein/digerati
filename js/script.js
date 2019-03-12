@@ -5,12 +5,21 @@ var GET = { output: 'html' };
 parseURLVars();
 //Check if we are passing by query or id
 console.log("Starting query...");
-if (GET.m == undefined) {
-    //Do nothing on unselected method, maybe display warning?
-} else {
+
+if (GET.id != undefined) {
     //Normalize mode
     normalizeMode();
     //Lookup the constructed url
+    lookup(constructUrl());
+}else if(GET.q != undefined){
+    //Do a lookup for the term for every mode option
+    GET.m = 'n';
+    lookup(constructUrl());
+    GET.m = 'p';
+    lookup(constructUrl());
+    GET.m = 'b';
+    lookup(constructUrl())
+    GET.m = 't'
     lookup(constructUrl());
 }
 
@@ -18,8 +27,23 @@ if (GET.m == undefined) {
  * Make the API work with different aliases for the modes
  */
 function normalizeMode() {
-    //First make it all lowercase, and only pick the first letter
-    GET.m = GET.m.toLowerCase().trim().substring(0, 1);
+    //Check the mode depending on the ID input
+    let id = GET.id.toLowerCase().trim();
+    if (contains(id, 'person')) GET.m = 'n';
+    else if (contains(id, 'place')) GET.m = 'p';
+    else if (contains(id, 'book')) GET.m = 'b';
+    else if (contains(id, 'title')) GET.m = 't';
+    //Also normalize the id
+    GET.id = GET.id.substring(GET.id.indexOf('_') + 1);
+}
+
+/**
+ * Returns a boolean if a substring is in that provided string
+ * @param {String} s 
+ * @param {String} c 
+ */
+function contains(s, c) {
+    return (s.indexOf(c) != -1);
 }
 
 /**
@@ -58,8 +82,8 @@ function lookup(urlVar) {
         type: "GET",
         cache: false,
         dataType: 'json',
-        crossDomain: true,            
-        contentType: "text/plain" ,        
+        crossDomain: true,
+        contentType: "text/plain",
         success: function (response) {
             start(response);
         },
@@ -91,7 +115,7 @@ function start(data) {
                 break;
         }
     });
-    document.body.innerHTML = html;
+    document.body.innerHTML += html;
 }
 
 /**
