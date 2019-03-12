@@ -2,25 +2,33 @@
  * Holds the GET variables
  */
 var GET = { output: 'html' };
-parseURLVars();
-//Check if we are passing by query or id
-console.log("Starting query...");
 
-if (GET.id != undefined) {
-    //Normalize mode
-    normalizeMode();
-    //Lookup the constructed url
-    lookup(constructUrl());
-}else if(GET.q != undefined){
-    //Do a lookup for the term for every mode option
-    GET.m = 'n';
-    lookup(constructUrl());
-    GET.m = 'p';
-    lookup(constructUrl());
-    GET.m = 'b';
-    lookup(constructUrl())
-    GET.m = 't'
-    lookup(constructUrl());
+init();
+
+/**
+ * Called once the document has been initialized
+ */
+function init() {
+    parseURLVars();
+    //Check if we are passing by query or id
+    console.log("Starting query...");
+
+    if (GET.id != undefined) {
+        //Normalize mode
+        normalizeMode();
+        //Lookup the constructed url
+        lookup(constructUrl());
+    } else if (GET.q != undefined) {
+        //Do a lookup for the term for every mode option
+        GET.m = 'n';
+        lookup(constructUrl());
+        GET.m = 'p';
+        lookup(constructUrl());
+        GET.m = 'b';
+        lookup(constructUrl())
+        GET.m = 't'
+        lookup(constructUrl());
+    }
 }
 
 /**
@@ -85,7 +93,7 @@ function lookup(urlVar) {
         crossDomain: true,
         contentType: "text/plain",
         success: function (response) {
-            start(response);
+            start(response, urlVar);
         },
         error: function (xhr, status) {
             console.log("error in data request");
@@ -97,6 +105,8 @@ function lookup(urlVar) {
  * Entry point of the code, takes JSON data as the parameter, will then visualize it nicely
  */
 function start(data) {
+    console.log("Working on data:");
+    console.log(data);
     //For each of the entry points in the data set, show a results div
     let html = "";
     data.forEach(entry => {
@@ -136,6 +146,7 @@ function displayName(entry) {
     ahtml += getEntries(entry);
     //Close results div
     ahtml += "</div>";
+    return ahtml;
 }
 
 /**
