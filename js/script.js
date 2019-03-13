@@ -27,7 +27,7 @@ function init() {
         GET.m = 'b';
         lookup(constructUrl(), 'b')
         GET.m = 't'
-        lookup(constructUrl(),  't');
+        lookup(constructUrl(), 't');
     }
 }
 
@@ -125,7 +125,27 @@ function start(data, mode) {
                 break;
         }
     });
-    document.body.innerHTML += html;
+    if (html.trim().length > 1) {
+        document.body.innerHTML += modeHeading(mode);
+        document.body.innerHTML += html;
+    }
+}
+
+/**
+ * Return the appropriate title for the provided mode
+ */
+function modeHeading(mode){
+    switch(mode){
+        case 'n':
+            return "<h3>Personal Names</h3>";
+        case 'p':
+            return "<h3>Geographics Places</h3>";
+        case 't':
+            return "<h3>Official Titles</h3>";
+        case 'b':
+            return "<h3>Books</h3>";
+    }
+    return "<h3>Unspecfied Mode</h3>";
 }
 
 /**
@@ -173,15 +193,16 @@ function displayPlace(entry) {
 function displayBook(entry) {
     //Start results div
     let details = entry.aks_BooksDetails;
-    details.forEach(function(val){
-        console.log(val);
-    });
     let html = "<div class='result'>";
-    html += "<h3>" + entry.ChName + " <span style='color:grey;'>(" + entry.KoName + ")</span></h3>"
-    html += "<span class='dictDef'>" + entry.Source + "</span>";
-    html += "<p>Chinese Name: " + entry.ChName + "</p>";
-    html += "<p>Korean Name: " + entry.KoName + "</p>";
-    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To More Info</a></p>";
+    html += "<h3>" + entry.ChName + " <span style='color:grey;'>(" + entry.KoName + ")</span></h3>";
+    //Now go through every book separately
+    details.forEach(function (book) {
+        html += "<p><b>ID: " + book.BookId + "</b></p>";
+        html += "<span class='dictDef'>" + book.Source + "</span>";
+        html += "<p>Holding Institution: " + book.HoldingInstitution + "</p>";
+        html += "<p>Publication Date: " + book.PublicationTime + "</p>";
+        html += "<p><a target='_blank' href='" + book.Link + "'>Link To More Info</a></p>";
+    });
     //Close results div
     html += "</div>";
     return html;
