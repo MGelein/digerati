@@ -213,15 +213,18 @@ function displayBook(entry) {
  * @param {Object} entry 
  */
 function displayTitle(entry) {
-    let sillok = entry.aks_bOfficesofSillok[0];
     //Start results div
     let html = "<div class='result'>";
-    html += "<h3>" + sillok.sillokId + " <span style='color:grey;'>(" + entry.AksBOId + ")</span></h3>"
+    html += "<h3>" + entry.AksBOId + "</h3>";
     html += "<span class='dictDef'>" + entry.Source + "</span>";
     html += "<p>Chinese Name: " + entry.ChName + "</p>";
     html += "<p>Korean Name: " + entry.KoName + "</p>";
-    html += "<p>Date: " + getSillokDate(sillok) + "&nbsp;<span style='color:grey;'>(" + getKingDate(sillok) + ")</span></p>";
-    html += "<p><a target='_blank' href='" + sillok.sillokLink + "'>Sillok Link</a></p>";
+    //Go through all sillok entries
+    entry.aks_bOfficesofSillok.forEach(function(sillok){
+        html += "<h4>" + sillok.sillokId + "</h4>";
+        html += "<p>Date: " + getSillokDate(sillok) + "&nbsp;<span style='color:grey;'>(" + getKingDate(sillok) + ")</span></p>";
+        html += "<p><a target='_blank' href='" + sillok.sillokLink + "'>Sillok Link</a></p>";
+    });
     //Close results div
     html += "</div>";
     return html;
