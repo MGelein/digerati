@@ -17,17 +17,17 @@ function init() {
         //Normalize mode
         normalizeMode();
         //Lookup the constructed url
-        lookup(constructUrl());
+        lookup(constructUrl(), GET.m);
     } else if (GET.q != undefined) {
         //Do a lookup for the term for every mode option
         GET.m = 'n';
-        lookup(constructUrl());
+        lookup(constructUrl(), 'n');
         GET.m = 'p';
-        lookup(constructUrl());
+        lookup(constructUrl(), 'p');
         GET.m = 'b';
-        lookup(constructUrl())
+        lookup(constructUrl(), 'b')
         GET.m = 't'
-        lookup(constructUrl());
+        lookup(constructUrl(),  't');
     }
 }
 
@@ -77,12 +77,12 @@ function constructUrl() {
  */
 function getPortNumber(mode) {
     if (mode == 'n') return "85/api/";
-    else if (mode == 'b') return "91/api/";
+    else if (mode == 'b') return "86/api/";
     else if (mode == 'p') return "88/api/";
     else if (mode == 't') return "89/api/";
 }
 
-function lookup(urlVar) {
+function lookup(urlVar, mode) {
     console.log("Loading data from: " + urlVar);
     //Immediately pass on the GET variable to the proxy
     $.ajax({
@@ -93,7 +93,9 @@ function lookup(urlVar) {
         crossDomain: true,
         contentType: "text/plain",
         success: function (response) {
-            start(response, urlVar);
+            console.log("Response from: " + urlVar);
+            console.log(response);
+            start(response, mode);
         },
         error: function (xhr, status) {
             console.log("error in data request");
@@ -104,13 +106,11 @@ function lookup(urlVar) {
 /**
  * Entry point of the code, takes JSON data as the parameter, will then visualize it nicely
  */
-function start(data) {
-    console.log("Working on data:");
-    console.log(data);
+function start(data, mode) {
     //For each of the entry points in the data set, show a results div
     let html = "";
     data.forEach(entry => {
-        switch (GET.m) {
+        switch (mode) {
             case 'n':
                 html += displayName(entry);
                 break;
@@ -172,8 +172,12 @@ function displayPlace(entry) {
  */
 function displayBook(entry) {
     //Start results div
+    let details = entry.aks_BooksDetails;
+    details.forEach(function(val){
+        console.log(val);
+    });
     let html = "<div class='result'>";
-    html += "<h3>" + entry.BookId + " <span style='color:grey;'>(" + entry.AksbId + ")</span></h3>"
+    html += "<h3>" + entry.ChName + " <span style='color:grey;'>(" + entry.KoName + ")</span></h3>"
     html += "<span class='dictDef'>" + entry.Source + "</span>";
     html += "<p>Chinese Name: " + entry.ChName + "</p>";
     html += "<p>Korean Name: " + entry.KoName + "</p>";
