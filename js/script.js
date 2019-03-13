@@ -327,13 +327,9 @@ function parseURLVars() {
     let get = url.split('?')[1];
     //Split the get part into pairs, each is a key value pair
     let pairs = get.split("&");
-    //Iterate over the pairs, and only once you see keyword we return the value
-    var returnValue = "";
+    //Iterate over the pairs, log them all in the object
     pairs.forEach(function (pair) {
-        if (pair.split("=")[0].toLowerCase() == "keyword") {
-            returnValue = pair.split("=")[1];
-        }
         let parts = pair.split('=');
-        GET[decodeURI(parts[0])] = decodeURI(parts[1]);
+        GET[decodeURI(parts[0]).trim()] = decodeURI(parts[1].trim());
     });
 }
