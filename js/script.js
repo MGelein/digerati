@@ -3,6 +3,14 @@
  */
 var GET = { output: 'html' };
 
+const NAME = 'koreanperson';
+const PLACE = 'koreanplace';
+const SILLOK = 'koreansillokoffice';
+const BOOK = 'koreanbook';
+const RANK = 'koreanofficerrank';
+const POST = 'koreanofficerpost';
+const OFFICE = 'koreanofficeroffice';
+
 init();
 
 /**
@@ -20,14 +28,20 @@ function init() {
         lookup(constructUrl(), GET.m);
     } else if (GET.q != undefined) {
         //Do a lookup for the term for every mode option
-        GET.m = 'n';
-        lookup(constructUrl(), 'n');
-        GET.m = 'p';
-        lookup(constructUrl(), 'p');
-        GET.m = 'b';
-        lookup(constructUrl(), 'b')
-        GET.m = 't'
-        lookup(constructUrl(), 't');
+        GET.m = NAME;
+        lookup(constructUrl(), NAME);
+        GET.m = PLACE;
+        lookup(constructUrl(), PLACE);
+        GET.m = BOOK;
+        lookup(constructUrl(), BOOK)
+        GET.m = OFFICE;
+        lookup(constructUrl(), OFFICE);
+        GET.m = RANK;
+        lookup(constructUrl(), RANK);
+        GET.m = POST;
+        lookup(constructUrl(), POST);
+        GET.m = SILLOK;
+        lookup(constructUrl(), SILLOK);
     }
 }
 
@@ -37,10 +51,13 @@ function init() {
 function normalizeMode() {
     //Check the mode depending on the ID input
     let id = GET.id.toLowerCase().trim();
-    if (contains(id, 'person')) GET.m = 'n';
-    else if (contains(id, 'place')) GET.m = 'p';
-    else if (contains(id, 'book')) GET.m = 'b';
-    else if (contains(id, 'title')) GET.m = 't';
+    //Retrieve the mode part
+    GET.m = id.substring(0, id.indexOf('_'));
+    if ([NAME, PLACE, BOOK, SILLOK, RANK, POST, OFFICE].indexOf(GET.m) == -1) {
+        console.log("WARNING!!!!");
+        console.log("Unrecognized method: " + GET.m);
+        console.log("WARNING!!!!");
+    }
     //Also normalize the id
     GET.id = GET.id.substring(GET.id.indexOf('_') + 1);
 }
@@ -51,7 +68,7 @@ function normalizeMode() {
  * @param {String} c 
  */
 function contains(s, c) {
-    return (s.indexOf(c) != -1);
+    return (s.indexOf(c) == 0);
 }
 
 /**
@@ -76,12 +93,20 @@ function constructUrl() {
  * @param {String} mode 
  */
 function getPortNumber(mode) {
-    if (mode == 'n') return "85/api/";
-    else if (mode == 'b') return "86/api/";
-    else if (mode == 'p') return "88/api/";
-    else if (mode == 't') return "89/api/";
+    if (mode == NAME) return "85/api/";
+    else if (mode == BOOK) return "86/api/";
+    else if (mode == PLACE) return "88/api/";
+    else if (mode == SILLOK) return "89/api/";
+    else if (mode == RANK) return "92/api/";
+    else if (mode == POST) return "90/api/";
+    else if (mode == OFFICE) return "91/api/";
 }
 
+/**
+ * Starts the lookup using the provided url to fetch data
+ * @param {String} urlVar 
+ * @param {String} mode 
+ */
 function lookup(urlVar, mode) {
     console.log("Loading data from: " + urlVar);
     //Immediately pass on the GET variable to the proxy
@@ -111,17 +136,26 @@ function start(data, mode) {
     let html = "";
     data.forEach(entry => {
         switch (mode) {
-            case 'n':
-                html += displayName(entry);
+            case NAME:
+                html += displayPerson(entry);
                 break;
-            case 'p':
+            case PLACE:
                 html += displayPlace(entry);
                 break;
-            case 't':
-                html += displayTitle(entry);
+            case SILLOK:
+                html += displaySillokOffice(entry);
                 break;
-            case 'b':
+            case BOOK:
                 html += displayBook(entry);
+                break;
+            case RANK:
+                html += displayRank(entry);
+                break;
+            case OFFICE:
+                html += displayOffice(entry);
+                break;
+            case POST:
+                html += displayPost(entry);
                 break;
         }
     });
@@ -134,16 +168,22 @@ function start(data, mode) {
 /**
  * Return the appropriate title for the provided mode
  */
-function modeHeading(mode){
-    switch(mode){
-        case 'n':
+function modeHeading(mode) {
+    switch (mode) {
+        case NAME:
             return "<h3>Personal Names</h3>";
-        case 'p':
+        case PLACE:
             return "<h3>Geographics Places</h3>";
-        case 't':
-            return "<h3>Official Titles</h3>";
-        case 'b':
+        case SILLOK:
+            return "<h3>Sillok Office</h3>";
+        case BOOK:
             return "<h3>Books</h3>";
+        case RANK:
+            return "<h3>Officer Ranks</h3>";
+        case POST:
+            return "<h3>Officer Post</h3>"
+        case OFFICE:
+            return "<h3>Officer Office</h3>";
     }
     return "<h3>Unspecfied Mode</h3>";
 }
@@ -152,7 +192,7 @@ function modeHeading(mode){
  * Pretty prints the object entry to the screen
  * @param {Object} entry 
  */
-function displayName(entry) {
+function displayPerson(entry) {
     //Start results div
     let ahtml = "<div class='result'>";
     ahtml += "<h3>" + entry.PersonId + " <span style='color:grey;'>(" + entry.AkspId + ")</span></h3>"
@@ -212,7 +252,7 @@ function displayBook(entry) {
  * Pretty prints the object entry to the screen
  * @param {Object} entry 
  */
-function displayTitle(entry) {
+function displaySillokOffice(entry) {
     //Start results div
     let html = "<div class='result'>";
     html += "<h3>" + entry.AksBOId + "</h3>";
@@ -220,7 +260,7 @@ function displayTitle(entry) {
     html += "<p>Chinese Name: " + entry.ChName + "</p>";
     html += "<p>Korean Name: " + entry.KoName + "</p>";
     //Go through all sillok entries
-    entry.aks_bOfficesofSillok.forEach(function(sillok){
+    entry.aks_bOfficesofSillok.forEach(function (sillok) {
         html += "<h4>" + sillok.sillokId + "</h4>";
         html += "<p>Date: " + getSillokDate(sillok) + "&nbsp;<span style='color:grey;'>(" + getKingDate(sillok) + ")</span></p>";
         html += "<p><a target='_blank' href='" + sillok.sillokLink + "'>Sillok Link</a></p>";
