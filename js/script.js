@@ -175,32 +175,8 @@ function start(data, mode) {
         }
     });
     if (html.trim().length > 1) {
-        document.body.innerHTML += modeHeading(mode);
-        document.body.innerHTML += html;
+        $('#' + mode).fadeIn().append(html);
     }
-}
-
-/**
- * Return the appropriate title for the provided mode
- */
-function modeHeading(mode) {
-    switch (mode) {
-        case NAME:
-            return "<h3>Personal Names</h3>";
-        case PLACE:
-            return "<h3>Geographics Places</h3>";
-        case SILLOK:
-            return "<h3>Sillok Office</h3>";
-        case BOOK:
-            return "<h3>Books</h3>";
-        case RANK:
-            return "<h3>Officer Ranks</h3>";
-        case POST:
-            return "<h3>Officer Post</h3>"
-        case OFFICE:
-            return "<h3>Officer Office</h3>";
-    }
-    return "<h3>Unspecfied Mode</h3>";
 }
 
 /**
