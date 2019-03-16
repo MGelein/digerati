@@ -227,6 +227,68 @@ function displayPlace(entry) {
 }
 
 /**
+ * Displays a rank query entry
+ * @param {Object} entry 
+ */
+function displayRank(entry) {
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + entry.LocationId + " <span style='color:grey;'>(" + entry.AksloId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To Map</a></p>";
+    //Close results div
+    html += "</div>";
+    return html;
+}
+
+/**
+ * Displays a post query entry
+ * @param {Object} entry 
+ */
+function displayPost(entry) {
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + entry.LocationId + " <span style='color:grey;'>(" + entry.AksloId + ")</span></h3>"
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To Map</a></p>";
+    //Close results div
+    html += "</div>";
+    return html;
+}
+
+/**
+ * Displays a post query entry
+ * @param {Object} entry 
+ */
+function displayOffice(entry) {
+    //Start results div
+    let html = "<div class='result'>";
+    html += "<h3>" + entry.AksopId + "</h3>";
+    html += "<span class='dictDef'>" + entry.Source + "</span>";
+    html += "<p>Chinese Name: " + entry.ChName + "</p>";
+    html += "<p>Korean Name: " + entry.KoName + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Sillok Wiki</a></p>";
+    let details = entry.aks_OfficePostToOffice;
+    details.forEach(detail => {
+        html += "<p><b>Aks Office ID: " + detail.AksoffId + "<span style='color:grey;'>&nbsp;(" + detail.AksopId + ")</span></b></p>";
+        html += "<p>Office Chinese Name: " + detail.OffChName + "</p>";
+        html += "<p>Office Korean Name: " + detail.OffKoName + "</p>";
+        html += "<p>Office Type: " + detail.OfficeType + "</p>";
+        html += "<p>Office Rank Type: " + detail.OfficeRankType + "</p>";
+        html += "<p>Office Post Type: " + detail.OfficePostType + "</p>";
+        html += "<p>Office Position: " + detail.OfficePositionCentralLocal + " " + detail.OfficePositionTypeEastWest + "</p>"
+        html += "<p><a target='_blank' href='" + detail.OfficeLink + "'>Office Link</a></p>";
+    });
+    //Close results div
+    html += "</div>";
+    return html;
+}
+
+/**
  * Pretty prints the object entry to the screen
  * @param {Object} entry 
  */
