@@ -224,11 +224,19 @@ function displayPlace(entry) {
 function displayRank(entry) {
     //Start results div
     let html = "<div class='result'>";
-    html += "<h3>" + entry.LocationId + " <span style='color:grey;'>(" + entry.AksloId + ")</span></h3>"
+    html += "<h3>" + entry.AksograId + "</h3>"
     html += "<span class='dictDef'>" + entry.Source + "</span>";
     html += "<p>Chinese Name: " + entry.ChName + "</p>";
     html += "<p>Korean Name: " + entry.KoName + "</p>";
-    html += "<p><a target='_blank' href='" + entry.Link + "'>Link To Map</a></p>";
+    let opt1 = entry.OfficePostType1;
+    if(opt1 != null) html+= "<p>Office Post Type 1: " + opt1 +"</p>";
+    let opt2 = entry.OfficePostType2;
+    if(opt2 != null) html += "<p>Office Post Type 2: " + opt2 + "</p>";
+    let ort1 = entry.OfficeRankType1;
+    if(ort1 != null) html += "<p>Office Rank Type 1: " + ort1 + "</p>";
+    let ort2 = entry.OfficeRankType2;
+    if(ort2 != null) html += "<p>Office Rank Type 2: " + ort2 + "</p>";
+    html += "<p><a target='_blank' href='" + entry.Link + "'>Sillok Wiki</a></p>";
     //Close results div
     html += "</div>";
     return html;
