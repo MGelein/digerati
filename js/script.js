@@ -256,7 +256,7 @@ function displayPost(entry) {
     html += "<p><a target='_blank' href='" + entry.Link + "'>Sillok Wiki</a></p>";
     let details = entry.aks_OfficesToOfficePost;
     details.forEach(detail => {
-        html += "<p><b>Aks Post ID: " + detail.aksopId + "<span style='color:grey;'>&nbsp;(" + detail.AksopId + ")</span></b></p>";
+        html += "<p><b>Aks Post ID: " + detail.aksopId + "</b></p>";
         html += "<p>Post Chinese Name: " + detail.OPChName + "</p>";
         html += "<p>Post Korean Name: " + detail.OPKoName + "</p>";
         html += "<p>Office Rank Type: " + detail.OfficeRankType + "</p>";
