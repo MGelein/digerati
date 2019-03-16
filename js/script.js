@@ -22,10 +22,25 @@ function init() {
     console.log("Starting query...");
 
     if (GET.id != undefined) {
-        //Normalize mode
-        normalizeMode();
-        //Lookup the constructed url
-        lookup(constructUrl(), GET.m);
+        //See if we have to do this multiple times
+        if (GET.id.indexOf('|')) {
+            //Split by delimiter
+            let ids = GET.id.split('|');
+            //Lookup every one of the id's
+            ids.forEach(id => {
+                //Briefly assign this id to the GET variable
+                GET.id = id;
+                //Normalize mode
+                normalizeMode();
+                //Lookup the constructed url
+                lookup(constructUrl(), GET.m);
+            });
+        } else {//Single ID lookup
+            //Normalize mode
+            normalizeMode();
+            //Lookup the constructed url
+            lookup(constructUrl(), GET.m);
+        }
     } else if (GET.q != undefined) {
         //Do a lookup for the term for every mode option
         GET.m = NAME;
